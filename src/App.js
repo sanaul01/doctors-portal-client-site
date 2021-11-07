@@ -1,6 +1,8 @@
+
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import './App.css';
 import Appointment from './Components/Appointment/Appointment/Appointment';
+import Dashbord from './Components/Dashbord/Dashbord/Dashbord';
 import Home from './Components/Home/Home/Home';
 import Login from './Components/Login/Login/Login';
 import PrivateRoute from './Components/Login/Login/PrivateRoute/PrivateRoute';
@@ -21,6 +23,9 @@ function App() {
             </Route>
             <PrivateRoute path='/appointment'>
               <Appointment></Appointment>
+            </PrivateRoute>
+            <PrivateRoute path='/dashbord'>
+              <Dashbord></Dashbord>
             </PrivateRoute>
             <Route path="/login">
               <Login></Login>

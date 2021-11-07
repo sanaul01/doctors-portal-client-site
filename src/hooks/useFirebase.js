@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import initializeFirebase from "../Components/Login/Firebase/Firebase.init";
-import { getAuth, createUserWithEmailAndPassword, signOut, onAuthStateChanged, signInWithEmailAndPassword} from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signOut, onAuthStateChanged, signInWithEmailAndPassword,  signInWithPopup, GoogleAuthProvider, updateProfile} from "firebase/auth";
 
 initializeFirebase();
 const useFirebase = () =>{
@@ -8,12 +8,23 @@ const useFirebase = () =>{
     const [isLoding, setIsLoding] = useState(true)
     const [authError, setAuthError] = useState('')
     const auth = getAuth();
+    const googleProvider = new GoogleAuthProvider();
 
-    const registerUser = (email, password) =>{
+    const registerUser = (email, password, name, history) =>{
       setIsLoding(true)
         createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-            setAuthError('')
+            setAuthError('');
+            const newUser = {email, displayName: name};
+            setUser(newUser);
+
+            updateProfile(auth.currentUser, {
+              displayName: name
+            }).then(() => {
+            }).catch((error) => {
+            });
+
+            history.replace('/');
           })
           .catch((error) => {
             setAuthError(error.message);
@@ -34,6 +45,20 @@ const useFirebase = () =>{
       })
       .finally(()=> setIsLoding(false));
     
+    };
+
+    const signInWithGoogle = (location, history) =>{
+      setIsLoding(true)
+      signInWithPopup(auth, googleProvider)
+      .then((result) => {
+        const destination = location?.state?.from || '/home';
+        history.replace(destination)
+        setAuthError('')
+      const user = result.user;
+      history.replace('/');
+      }).catch((error) => {
+      setAuthError(error.message);
+      }).finally(()=> setIsLoding(false));
     }
 
 
@@ -65,7 +90,8 @@ const useFirebase = () =>{
         user,
         registerUser,
         logOut,
-        loginUser
+        loginUser,
+        signInWithGoogle
     }
 }
 
